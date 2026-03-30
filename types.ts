@@ -1,4 +1,5 @@
 export interface UserProfile {
+  industry: string; // ← 追加
   companyDescription: string;
   location: string;
   employeeCount: string;
