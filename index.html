@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>北海道（道東・札幌）特化型 補助金AIパートナー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Noto Sans JP', sans-serif;
+        background-color: #f0f9ff;
+      }
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f1f1; }
+      ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        font-size: 0.95rem;
+      }
+      .markdown-body th, .markdown-body td {
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem;
+        text-align: left;
+      }
+      .markdown-body th {
+        background-color: #f8fafc;
+        font-weight: 700;
+        color: #1e3a8a;
+      }
+      .markdown-body h3 { font-size: 1.2rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.25rem; }
+      .markdown-body p { margin-bottom: 1rem; line-height: 1.7; color: #334155; }
+      .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+      .markdown-body li { margin-bottom: 0.5rem; }
+      .markdown-body strong { color: #1e40af; font-weight: 700; }
+
+      /* #4: Print & PDF styles */
+      @media print {
+        @page {
+          margin: 20mm;
+          size: A4;
+        }
+        aside, header, button, .no-print {
+          display: none !important;
+        }
+        body {
+          background-color: white !important;
+          color: black !important;
+        }
+        main {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        .markdown-body table {
+          box-shadow: none !important;
+          border: 1px solid #000 !important;
+          page-break-inside: avoid;
+        }
+        .markdown-body th {
+          background-color: #eee !important;
+          color: black !important;
+        }
+        .markdown-body strong {
+          color: black !important;
+          text-decoration: underline;
+        }
+        h1, h2, h3, h4 {
+          page-break-after: avoid;
+        }
+        section {
+          page-break-inside: avoid;
+          margin-bottom: 2rem;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
+    "remark-gfm": "https://esm.sh/remark-gfm@^4.0.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
