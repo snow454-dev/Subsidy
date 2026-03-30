@@ -61,7 +61,7 @@ const App: React.FC = () => {
   // スプレッドシート（GAS）へのデータ送信処理
   const saveDataToSpreadsheet = (data: UserProfile) => {
     // ※ここにGASでデプロイしたウェブアプリのURLを設定してください
-    const GAS_URL = "YOUR_GAS_WEB_APP_URL_HERE"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzPq7Nd28yJh-Y70Xtw2KHX0Z8hR7FniNppufGCJwn3T-Ny9jNU1T-i9neiSTXnOAOmcA/exec"; 
     
     // URLが未設定の場合は送信をスキップ（ローカルテスト時のエラー防止）
     if (GAS_URL === "YOUR_GAS_WEB_APP_URL_HERE") return;
