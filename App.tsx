@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { AppStep, UserProfile, GeminiResponse } from './types';
@@ -8,12 +7,29 @@ import { Spinner } from './components/Spinner';
 import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { ArrowRight, ArrowLeft, Edit3, RefreshCw, ExternalLink, FileText, CheckCircle, Printer, Download, Info } from 'lucide-react';
 
+// 日本標準産業分類ベースの業種リスト（サジェスト用）
+const INDUSTRIES = [
+  "農業・林業・漁業",
+  "建設業",
+  "製造業",
+  "情報通信業",
+  "運輸業・郵便業",
+  "卸売業・小売業",
+  "金融・保険業",
+  "不動産・物品賃貸業",
+  "宿泊業・飲食サービス業",
+  "医療・福祉",
+  "教育・学習支援業",
+  "サービス業（その他）"
+];
+
 const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>(AppStep.PROFILE_INPUT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const initialProfile: UserProfile = {
+    industry: '', // 追加: 業種
     companyDescription: '',
     location: '',
     employeeCount: '',
@@ -42,16 +58,40 @@ const App: React.FC = () => {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
+  // スプレッドシート（GAS）へのデータ送信処理
+  const saveDataToSpreadsheet = (data: UserProfile) => {
+    // ※ここにGASでデプロイしたウェブアプリのURLを設定してください
+    const GAS_URL = "YOUR_GAS_WEB_APP_URL_HERE"; 
+    
+    // URLが未設定の場合は送信をスキップ（ローカルテスト時のエラー防止）
+    if (GAS_URL === "YOUR_GAS_WEB_APP_URL_HERE") return;
+
+    fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        ...data
+      })
+    }).catch(console.error);
+  };
+
   const submitProfile = async () => {
     setError(null);
-    if (!profile.location.trim() || !profile.companyDescription.trim()) {
-      setError("所在地と事業内容は必須入力です。");
+    if (!profile.industry.trim() || !profile.location.trim() || !profile.companyDescription.trim()) {
+      setError("業種、所在地、事業内容は必須入力です。");
       return;
     }
 
     setLoading(true);
     try {
+      // DB（スプレッドシート）へのバックグラウンド保存
+      saveDataToSpreadsheet(profile);
+
+      // プロンプトに業種を追加してGeminiへリクエスト
       const prompt = getSelectionPrompt(
+        profile.industry,
         profile.companyDescription,
         profile.location,
         profile.employeeCount,
@@ -158,21 +198,39 @@ const App: React.FC = () => {
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
               <Edit3 size={20} className="text-blue-600"/>
-              企業情報入力 (道東・札幌エリア専門)
+              企業情報入力 (全国対応)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <div className="col-span-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">業種 (必須)</label>
+                <input
+                  type="text"
+                  name="industry"
+                  list="industry-list"
+                  placeholder="入力または一覧から選択"
+                  value={profile.industry}
+                  onChange={handleProfileChange}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow"
+                />
+                <datalist id="industry-list">
+                  {INDUSTRIES.map(ind => <option key={ind} value={ind} />)}
+                </datalist>
+              </div>
+
               <div className="col-span-1">
                 <label className="block text-sm font-semibold text-slate-700 mb-2">所在地 (必須)</label>
                 <input
                   type="text"
                   name="location"
-                  placeholder="例: 北海道 帯広市、釧路市、札幌市など"
+                  placeholder="例: 東京都 港区、大阪府 吹田市など"
                   value={profile.location}
                   onChange={handleProfileChange}
                   className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow"
                 />
               </div>
-              <div className="col-span-1">
+
+              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-semibold text-slate-700 mb-2">従業員数・事業形態</label>
                 <input
                   type="text"
@@ -183,6 +241,7 @@ const App: React.FC = () => {
                   className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-semibold text-slate-700 mb-2">事業内容 (必須)</label>
                 <textarea
@@ -194,6 +253,7 @@ const App: React.FC = () => {
                   className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-semibold text-slate-700 mb-2">現在の経営課題・目標</label>
                 <textarea
@@ -320,8 +380,8 @@ const App: React.FC = () => {
         <div className="space-y-6" ref={resultContainerRef}>
           <div className="bg-white p-8 rounded-xl shadow-md border border-slate-200 print:shadow-none print:border-none print:p-0">
             <div className="hidden print:block text-center mb-8 border-b-2 border-slate-900 pb-4">
-               <h1 className="text-2xl font-bold">北海道特化型 補助金申請支援レポート</h1>
-               <p className="text-sm mt-2">発行元: 北海道補助金AIパートナー / 所在地: {profile.location}</p>
+               <h1 className="text-2xl font-bold">全国対応型 補助金申請支援レポート</h1>
+               <p className="text-sm mt-2">発行元: 補助金AIパートナー / 所在地: {profile.location} / 業種: {profile.industry}</p>
             </div>
             
             <section className="mb-10">
