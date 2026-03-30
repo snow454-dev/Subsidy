@@ -185,7 +185,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <Layout currentStep={step}>
+    <Layout currentStep={step} profile={profile}>
       {error && (
         <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-200 flex items-center justify-between no-print animate-in fade-in zoom-in">
           <span className="text-sm font-medium">{error}</span>
