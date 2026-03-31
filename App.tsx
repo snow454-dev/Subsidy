@@ -27,7 +27,8 @@ const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>(AppStep.TERMS_AGREEMENT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+　const [isAgreed, setIsAgreed] = useState(false);
+  
   const initialProfile: UserProfile = {
     industry: '', // 追加: 業種
     companyDescription: '',
