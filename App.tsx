@@ -24,11 +24,14 @@ const INDUSTRIES = [
 ];
 
 const App: React.FC = () => {
+  // 初期ステップを利用規約画面に変更
   const [step, setStep] = useState<AppStep>(AppStep.TERMS_AGREEMENT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-　const [isAgreed, setIsAgreed] = useState(false);
   
+  // 利用規約の同意状態を管理
+  const [isAgreed, setIsAgreed] = useState(false);
+
   const initialProfile: UserProfile = {
     industry: '', // 追加: 業種
     companyDescription: '',
@@ -175,7 +178,8 @@ const App: React.FC = () => {
       setDraftResult('');
       setChecklistResult('');
       setError(null);
-      setStep(AppStep.PROFILE_INPUT);
+      setStep(AppStep.TERMS_AGREEMENT); // リセット時は同意画面に戻す
+      setIsAgreed(false); // 同意チェックも外す
     }
   };
 
@@ -194,6 +198,47 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* 利用規約・同意画面 */}
+      {step === AppStep.TERMS_AGREEMENT && (
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto my-8 animate-in fade-in zoom-in">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">利用規約およびプライバシーポリシー</h2>
+          
+          <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-8 h-64 overflow-y-auto text-sm text-slate-700 space-y-4">
+            <h3 className="font-bold">第1条（情報の収集と利用目的）</h3>
+            <p>本サービスに入力された情報（業種、所在地、事業内容、課題等）は、本アプリにおけるAI診断結果の生成に使用されるほか、当方からの有益な情報提供（関連するコンサルティングサービス、ITツール、補助金情報などのご案内）の目的で利用・保管させていただきます。</p>
+            
+            <h3 className="font-bold">第2条（第三者提供について）</h3>
+            <p>法令に基づく場合を除き、取得した情報をユーザーの事前同意なしに第三者（他社）へ提供することはありません。（※将来的に他社へ紹介するビジネスマッチング等を行う場合は、都度別途の同意を取得します）</p>
+
+            <h3 className="font-bold">第3条（免責事項）</h3>
+            <p>本サービスが提供するAIの診断結果や提案内容は参考情報であり、補助金の採択を保証するものではありません。最終的な申請判断や事実確認については、必ず各公募要領をご確認の上、ユーザー自身の責任で行うものとします。</p>
+          </div>
+
+          <div className="flex flex-col items-center gap-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                className="w-6 h-6 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+              />
+              <span className="text-slate-800 font-medium group-hover:text-blue-600 transition-colors">
+                利用規約およびプライバシーポリシーに同意します
+              </span>
+            </label>
+
+            <button
+              onClick={() => setStep(AppStep.PROFILE_INPUT)}
+              disabled={!isAgreed}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-16 rounded-full shadow-lg transition-all disabled:bg-slate-300 disabled:cursor-not-allowed transform active:scale-95 flex items-center gap-2"
+            >
+              同意してアプリを始める <ArrowRight size={20} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 企業情報入力画面 */}
       {step === AppStep.PROFILE_INPUT && (
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
