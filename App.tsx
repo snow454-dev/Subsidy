@@ -24,7 +24,7 @@ const INDUSTRIES = [
 ];
 
 const App: React.FC = () => {
-  const [step, setStep] = useState<AppStep>(AppStep.PROFILE_INPUT);
+  const [step, setStep] = useState<AppStep>(AppStep.TERMS_AGREEMENT);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
