@@ -8,10 +8,11 @@ export interface UserProfile {
 }
 
 export enum AppStep {
-  PROFILE_INPUT = 0,
-  SUBSIDY_SELECTION = 1,
-  PLAN_DRAFTING = 2,
-  CHECKLIST = 3,
+  TERMS_AGREEMENT = 'TERMS_AGREEMENT',
+  PROFILE_INPUT = 'PROFILE_INPUT',
+  SUBSIDY_SELECTION = 'SUBSIDY_SELECTION',
+  PLAN_DRAFTING = 'PLAN_DRAFTING',
+  CHECKLIST = 'CHECKLIST',
 }
 
 export interface SubsidyProposal {
