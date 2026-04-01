@@ -178,8 +178,8 @@ const App: React.FC = () => {
       setDraftResult('');
       setChecklistResult('');
       setError(null);
-      setStep(AppStep.TERMS_AGREEMENT); // リセット時は同意画面に戻す
-      setIsAgreed(false); // 同意チェックも外す
+      setStep(AppStep.TERMS_AGREEMENT);
+      setIsAgreed(false);
     }
   };
 
@@ -192,18 +192,18 @@ const App: React.FC = () => {
   return (
     <Layout currentStep={step} profile={profile}>
       {error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-200 flex items-center justify-between no-print animate-in fade-in zoom-in">
-          <span className="text-sm font-medium">{error}</span>
-          <button onClick={() => setError(null)} className="text-xl font-bold">&times;</button>
+        <div className="bg-red-50 text-red-700 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6 border border-red-200 flex items-center justify-between no-print animate-in fade-in zoom-in">
+          <span className="text-xs sm:text-sm font-medium">{error}</span>
+          <button onClick={() => setError(null)} className="text-xl font-bold ml-2 flex-shrink-0">&times;</button>
         </div>
       )}
 
-      {/* 利用規約・同意画面 */}
+      {/* ===== 利用規約・同意画面 ===== */}
       {step === AppStep.TERMS_AGREEMENT && (
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto my-8 animate-in fade-in zoom-in">
-          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">利用規約およびプライバシーポリシー</h2>
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 max-w-3xl mx-auto my-4 sm:my-8 animate-in fade-in zoom-in">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 sm:mb-6 text-center">利用規約およびプライバシーポリシー</h2>
           
-          <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-8 h-64 overflow-y-auto text-sm text-slate-700 space-y-4">
+          <div className="bg-slate-50 p-4 sm:p-6 rounded-lg border border-slate-200 mb-6 sm:mb-8 h-48 sm:h-64 overflow-y-auto text-xs sm:text-sm text-slate-700 space-y-3 sm:space-y-4">
             <h3 className="font-bold">第1条（情報の収集と利用目的）</h3>
             <p>本サービスに入力された情報（業種、所在地、事業内容、課題等）は、本アプリにおけるAI診断結果の生成に使用されるほか、当方からの有益な情報提供（関連するコンサルティングサービス、ITツール、補助金情報などのご案内）の目的で利用・保管させていただきます。</p>
             
@@ -214,15 +214,15 @@ const App: React.FC = () => {
             <p>本サービスが提供するAIの診断結果や提案内容は参考情報であり、補助金の採択を保証するものではありません。最終的な申請判断や事実確認については、必ず各公募要領をご確認の上、ユーザー自身の責任で行うものとします。</p>
           </div>
 
-          <div className="flex flex-col items-center gap-6">
-            <label className="flex items-center gap-3 cursor-pointer group">
+          <div className="flex flex-col items-center gap-4 sm:gap-6">
+            <label className="flex items-start sm:items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={isAgreed}
                 onChange={(e) => setIsAgreed(e.target.checked)}
-                className="w-6 h-6 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer mt-0.5 sm:mt-0 flex-shrink-0"
               />
-              <span className="text-slate-800 font-medium group-hover:text-blue-600 transition-colors">
+              <span className="text-sm sm:text-base text-slate-800 font-medium group-hover:text-blue-600 transition-colors">
                 利用規約およびプライバシーポリシーに同意します
               </span>
             </label>
@@ -230,7 +230,7 @@ const App: React.FC = () => {
             <button
               onClick={() => setStep(AppStep.PROFILE_INPUT)}
               disabled={!isAgreed}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-16 rounded-full shadow-lg transition-all disabled:bg-slate-300 disabled:cursor-not-allowed transform active:scale-95 flex items-center gap-2"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 sm:py-4 px-8 sm:px-16 rounded-full shadow-lg transition-all disabled:bg-slate-300 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               同意してアプリを始める <ArrowRight size={20} />
             </button>
@@ -238,18 +238,18 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* 企業情報入力画面 */}
+      {/* ===== 企業情報入力画面 ===== */}
       {step === AppStep.PROFILE_INPUT && (
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Edit3 size={20} className="text-blue-600"/>
+        <div className="space-y-4 sm:space-y-6">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2">
+              <Edit3 size={20} className="text-blue-600 flex-shrink-0"/>
               企業情報入力 (全国対応)
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               
               <div className="col-span-1">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">業種 (必須)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 sm:mb-2">業種 (必須)</label>
                 <input
                   type="text"
                   name="industry"
@@ -257,7 +257,7 @@ const App: React.FC = () => {
                   placeholder="入力または一覧から選択"
                   value={profile.industry}
                   onChange={handleProfileChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow"
+                  className="w-full p-2.5 sm:p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow text-sm sm:text-base"
                 />
                 <datalist id="industry-list">
                   {INDUSTRIES.map(ind => <option key={ind} value={ind} />)}
@@ -265,50 +265,50 @@ const App: React.FC = () => {
               </div>
 
               <div className="col-span-1">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">所在地 (必須)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 sm:mb-2">所在地 (必須)</label>
                 <input
                   type="text"
                   name="location"
                   placeholder="例: 東京都 港区、大阪府 吹田市など"
                   value={profile.location}
                   onChange={handleProfileChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow"
+                  className="w-full p-2.5 sm:p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-shadow text-sm sm:text-base"
                 />
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">従業員数・事業形態</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 sm:mb-2">従業員数・事業形態</label>
                 <input
                   type="text"
                   name="employeeCount"
                   placeholder="例: 個人事業主、正社員5名 など"
                   value={profile.employeeCount}
                   onChange={handleProfileChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">事業内容 (必須)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 sm:mb-2">事業内容 (必須)</label>
                 <textarea
                   name="companyDescription"
                   placeholder="具体的にどのような事業を行っていますか？"
                   rows={3}
                   value={profile.companyDescription}
                   onChange={handleProfileChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">現在の経営課題・目標</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5 sm:mb-2">現在の経営課題・目標</label>
                 <textarea
                   name="goals"
                   placeholder="補助金を使って解決したいこと（具体的数値案など）"
                   rows={3}
                   value={profile.goals}
                   onChange={handleProfileChange}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -317,7 +317,7 @@ const App: React.FC = () => {
             <button
               onClick={submitProfile}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-lg shadow-lg flex items-center gap-3 transition-all transform active:scale-95 disabled:bg-slate-400"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-12 rounded-lg shadow-lg flex items-center justify-center gap-2 sm:gap-3 transition-all transform active:scale-95 disabled:bg-slate-400 text-sm sm:text-base"
             >
               {loading ? <Spinner /> : "AIアドバイザーによる事業診断を開始する"}
               {!loading && <ArrowRight size={20} />}
@@ -326,24 +326,25 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* ===== 補助金選択画面 ===== */}
       {step === AppStep.SUBSIDY_SELECTION && (
-        <div className="space-y-6" ref={resultContainerRef}>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">AIアドバイザーによる事業診断 & 補助金提案</h3>
-            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-6 min-h-[100px]">
+        <div className="space-y-4 sm:space-y-6" ref={resultContainerRef}>
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-3 sm:mb-4">AIアドバイザーによる事業診断 & 補助金提案</h3>
+            <div className="bg-slate-50 p-3 sm:p-6 rounded-lg border border-slate-200 mb-4 sm:mb-6 min-h-[80px] sm:min-h-[100px] overflow-x-auto">
               {subsidyResult?.text ? (
                 <MarkdownRenderer content={subsidyResult.text} />
               ) : (
-                <p className="text-slate-500 italic">診断結果を生成しています...</p>
+                <p className="text-slate-500 italic text-sm">診断結果を生成しています...</p>
               )}
               {subsidyResult?.groundingChunks?.length ? (
-                <div className="mt-4 pt-4 border-t border-slate-200">
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-200">
                   <p className="text-xs font-bold text-slate-500 mb-2">関連ソース:</p>
                   <ul className="text-xs text-blue-600 space-y-1">
                     {subsidyResult.groundingChunks.map((c, i) => (
                       <li key={i} className="flex items-center gap-1">
-                        <ExternalLink size={12}/>
-                        <a href={c.web?.uri} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.web?.title}</a>
+                        <ExternalLink size={12} className="flex-shrink-0"/>
+                        <a href={c.web?.uri} target="_blank" rel="noopener noreferrer" className="hover:underline truncate">{c.web?.title}</a>
                       </li>
                     ))}
                   </ul>
@@ -351,15 +352,15 @@ const App: React.FC = () => {
               ) : null}
             </div>
             
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-200 no-print">
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-xl border border-blue-200 no-print">
               <label className="block text-sm font-bold text-blue-900 mb-2">
                 検討を進める補助金を選択してください
               </label>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3 sm:gap-4">
                 <select
                   value={selectedSubsidyName}
                   onChange={e => setSelectedSubsidyName(e.target.value)}
-                  className="w-full p-3 border border-blue-200 rounded-lg bg-white text-slate-800"
+                  className="w-full p-2.5 sm:p-3 border border-blue-200 rounded-lg bg-white text-slate-800 text-sm sm:text-base"
                 >
                   <option value="">-- 補助金を選択してください --</option>
                   {subsidyResult?.text
@@ -375,18 +376,18 @@ const App: React.FC = () => {
                     ))
                   }
                 </select>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleFetchDetails}
                     disabled={loading || !selectedSubsidyName.trim()}
-                    className="flex-1 bg-white hover:bg-slate-50 text-blue-700 border border-blue-200 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:bg-slate-200"
+                    className="w-full sm:flex-1 bg-white hover:bg-slate-50 text-blue-700 border border-blue-200 font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:bg-slate-200 text-sm sm:text-base"
                   >
                     {loading ? <Spinner /> : <><Info size={18}/> 詳細要件を確認</>}
                   </button>
                   <button
                     onClick={handleSubsidySelection}
                     disabled={loading || !selectedSubsidyName.trim()}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all disabled:bg-slate-400"
+                    className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all disabled:bg-slate-400 text-sm sm:text-base"
                   >
                     {loading ? <Spinner /> : <><FileText size={18}/> 計画骨子の作成へ</>}
                   </button>
@@ -395,38 +396,39 @@ const App: React.FC = () => {
             </div>
 
             {subsidyDetails && (
-              <div ref={detailsRef} className="mt-8 p-6 bg-white rounded-xl border-2 border-blue-100 shadow-sm animate-in fade-in slide-in-from-top-4">
-                <div className="prose prose-blue max-w-none">
+              <div ref={detailsRef} className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white rounded-xl border-2 border-blue-100 shadow-sm animate-in fade-in slide-in-from-top-4">
+                <div className="prose prose-blue max-w-none prose-sm sm:prose-base">
                   <MarkdownRenderer content={subsidyDetails} />
                 </div>
               </div>
             )}
           </div>
-          <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors no-print">
+          <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 text-xs sm:text-sm font-medium transition-colors no-print">
             <ArrowLeft size={16} /> 情報を修正する
           </button>
         </div>
       )}
 
+      {/* ===== 計画骨子画面 ===== */}
       {step === AppStep.PLAN_DRAFTING && (
-        <div className="space-y-6" ref={resultContainerRef}>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 print:shadow-none print:border-none">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <FileText size={20} className="text-green-600"/>
-              AIアドバイザー作成 事業計画骨子 ({selectedSubsidyName})
+        <div className="space-y-4 sm:space-y-6" ref={resultContainerRef}>
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 print:shadow-none print:border-none">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-3 sm:mb-4 flex items-start sm:items-center gap-2">
+              <FileText size={20} className="text-green-600 flex-shrink-0 mt-0.5 sm:mt-0"/>
+              <span>AIアドバイザー作成 事業計画骨子 ({selectedSubsidyName})</span>
             </h3>
-            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 print:bg-white">
+            <div className="bg-slate-50 p-3 sm:p-6 rounded-lg border border-slate-200 print:bg-white overflow-x-auto">
               <MarkdownRenderer content={draftResult} />
             </div>
           </div>
-          <div className="flex justify-between items-center no-print">
-            <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 no-print">
+            <button onClick={handleBack} className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 hover:text-slate-700 text-xs sm:text-sm font-medium transition-colors order-2 sm:order-1">
               <ArrowLeft size={16} /> 補助金を選び直す
             </button>
             <button
               onClick={handleDraftApproval}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-12 rounded-lg shadow-lg flex items-center gap-2 transition-all transform active:scale-95 disabled:bg-slate-400"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 sm:px-12 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95 disabled:bg-slate-400 order-1 sm:order-2 text-sm sm:text-base"
             >
               {loading ? <Spinner /> : "最終要件チェックへ"}
             </button>
@@ -434,50 +436,51 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* ===== チェックリスト画面 ===== */}
       {step === AppStep.CHECKLIST && (
-        <div className="space-y-6" ref={resultContainerRef}>
-          <div className="bg-white p-8 rounded-xl shadow-md border border-slate-200 print:shadow-none print:border-none print:p-0">
+        <div className="space-y-4 sm:space-y-6" ref={resultContainerRef}>
+          <div className="bg-white p-4 sm:p-8 rounded-xl shadow-md border border-slate-200 print:shadow-none print:border-none print:p-0">
             <div className="hidden print:block text-center mb-8 border-b-2 border-slate-900 pb-4">
                <h1 className="text-2xl font-bold">全国対応型 補助金申請支援レポート</h1>
                <p className="text-sm mt-2">発行元: 補助金AIパートナー / 所在地: {profile.location} / 業種: {profile.industry}</p>
             </div>
             
-            <section className="mb-10">
-              <h3 className="text-xl font-bold text-slate-800 mb-4 border-l-4 border-blue-600 pl-3">1. AIアドバイザー診断レポート</h3>
-              <div className="p-4 bg-slate-50 rounded-lg print:bg-white print:p-0">
+            <section className="mb-6 sm:mb-10">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-3 sm:mb-4 border-l-4 border-blue-600 pl-3">1. AIアドバイザー診断レポート</h3>
+              <div className="p-3 sm:p-4 bg-slate-50 rounded-lg print:bg-white print:p-0 overflow-x-auto">
                 <MarkdownRenderer content={draftResult} />
               </div>
             </section>
 
             <section>
-              <h3 className="text-xl font-bold text-slate-800 mb-4 border-l-4 border-indigo-600 pl-3">2. AIアドバイザーの重要チェックリスト</h3>
-              <div className="p-4 bg-yellow-50 rounded-lg print:bg-white print:p-0">
+              <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-3 sm:mb-4 border-l-4 border-indigo-600 pl-3">2. AIアドバイザーの重要チェックリスト</h3>
+              <div className="p-3 sm:p-4 bg-yellow-50 rounded-lg print:bg-white print:p-0 overflow-x-auto">
                 <MarkdownRenderer content={checklistResult} />
               </div>
             </section>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 no-print">
-            <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors order-2 md:order-1">
-              <ArrowLeft size={16} /> 計画骨子を修正する
-            </button>
-            
-            <div className="flex gap-4 order-1 md:order-2">
+          <div className="flex flex-col items-stretch gap-3 sm:gap-4 no-print">
+            {/* モバイル: 縦積み / デスクトップ: 横並び */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
               <button
                 onClick={handlePrint}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-12 rounded-full shadow-xl flex items-center gap-2 transition-all transform hover:scale-105"
+                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 sm:py-4 px-8 sm:px-12 rounded-full shadow-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 text-sm sm:text-base"
               >
                 <Download size={20} />
                 PDFレポートを生成 (印刷)
               </button>
               <button
                 onClick={resetApp}
-                className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-8 rounded-full shadow-lg flex items-center gap-2 transition-all opacity-80 hover:opacity-100"
+                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 sm:py-4 px-8 rounded-full shadow-lg flex items-center justify-center gap-2 transition-all opacity-80 hover:opacity-100 text-sm sm:text-base"
               >
                 <RefreshCw size={20} />
                 最初から
               </button>
             </div>
+            <button onClick={handleBack} className="flex items-center justify-center sm:justify-start gap-2 text-slate-500 hover:text-slate-700 text-xs sm:text-sm font-medium transition-colors">
+              <ArrowLeft size={16} /> 計画骨子を修正する
+            </button>
           </div>
         </div>
       )}
