@@ -353,16 +353,28 @@ const App: React.FC = () => {
             
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-200 no-print">
               <label className="block text-sm font-bold text-blue-900 mb-2">
-                検討を進める補助金名を入力してください
+                検討を進める補助金を選択してください
               </label>
               <div className="flex flex-col gap-4">
-                <input
-                  type="text"
+                <select
                   value={selectedSubsidyName}
                   onChange={e => setSelectedSubsidyName(e.target.value)}
-                  className="w-full p-3 border border-blue-200 rounded-lg"
-                  placeholder="例: ものづくり補助金、IT導入補助金など"
-                />
+                  className="w-full p-3 border border-blue-200 rounded-lg bg-white text-slate-800"
+                >
+                  <option value="">-- 補助金を選択してください --</option>
+                  {subsidyResult?.text
+                    .split('\n')
+                    .filter(line => line.startsWith('|') && !line.includes('補助金名') && !line.includes('---'))
+                    .map(line => {
+                      const cols = line.split('|').map(c => c.trim()).filter(Boolean);
+                      return cols[1] ? cols[1].replace(/\*\*/g, '') : null;
+                    })
+                    .filter((name): name is string => !!name && name.length > 2)
+                    .map((name, i) => (
+                      <option key={i} value={name}>{name}</option>
+                    ))
+                  }
+                </select>
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={handleFetchDetails}
