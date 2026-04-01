@@ -1,83 +1,51 @@
-import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_INSTRUCTION } from "../constants";
 import { GeminiResponse, GroundingChunk } from "../types";
 
-const getApiKey = () => import.meta.env.VITE_GEMINI_API_KEY || "";
-
-export const fetchSubsidies = async (prompt: string): Promise<GeminiResponse> => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
-  
+// サーバー側API経由でGeminiを呼ぶ共通関数
+const callGeminiAPI = async (
+  prompt: string,
+  temperature: number = 0.2
+): Promise<GeminiResponse> => {
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
+    const response = await fetch("/api/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt,
         systemInstruction: SYSTEM_INSTRUCTION,
-        tools: [{ googleSearch: {} }],
-        temperature: 0.2,
-      },
+        temperature,
+      }),
     });
 
-    const text = response.text || "情報の取得に失敗しました。";
-    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks as GroundingChunk[] | undefined;
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      console.error("API error:", err);
+      return { text: "エラーが発生しました。しばらくしてから再試行してください。" };
+    }
 
-    return { text, groundingChunks };
+    const data = await response.json();
+    return {
+      text: data.text || "情報の取得に失敗しました。",
+      groundingChunks: data.groundingChunks as GroundingChunk[] | undefined,
+    };
   } catch (error) {
     console.error("Fetch error:", error);
-    return { text: "エラーが発生しました。インターネット接続や所在地設定を確認してください。" };
+    return { text: "通信エラーが発生しました。インターネット接続を確認してください。" };
   }
+};
+
+export const fetchSubsidies = async (prompt: string): Promise<GeminiResponse> => {
+  return callGeminiAPI(prompt, 0.2);
 };
 
 export const fetchSubsidyDetails = async (prompt: string): Promise<GeminiResponse> => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        tools: [{ googleSearch: {} }],
-        temperature: 0.2,
-      },
-    });
-    return { text: response.text || "詳細情報の取得に失敗しました。" };
-  } catch (error) {
-    return { text: "通信エラーが発生しました。" };
-  }
+  return callGeminiAPI(prompt, 0.2);
 };
 
 export const generateDraft = async (prompt: string): Promise<GeminiResponse> => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        tools: [{ googleSearch: {} }],
-        temperature: 0.7,
-      },
-    });
-    return { text: response.text || "ドラフトの生成に失敗しました。" };
-  } catch (error) {
-    return { text: "通信エラーが発生しました。" };
-  }
+  return callGeminiAPI(prompt, 0.7);
 };
 
 export const generateChecklist = async (prompt: string): Promise<GeminiResponse> => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        tools: [{ googleSearch: {} }],
-        temperature: 0.2,
-      },
-    });
-    return { text: response.text || "チェックリストの生成に失敗しました。" };
-  } catch (error) {
-    return { text: "通信エラーが発生しました。" };
-  }
+  return callGeminiAPI(prompt, 0.2);
 };
