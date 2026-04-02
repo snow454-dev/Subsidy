@@ -7,6 +7,9 @@ const callGeminiAPI = async (
   temperature: number = 0.2
 ): Promise<GeminiResponse> => {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000); // 60秒タイムアウト
+
     const response = await fetch("/api/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -15,7 +18,9 @@ const callGeminiAPI = async (
         systemInstruction: SYSTEM_INSTRUCTION,
         temperature,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
@@ -28,7 +33,10 @@ const callGeminiAPI = async (
       text: data.text || "情報の取得に失敗しました。",
       groundingChunks: data.groundingChunks as GroundingChunk[] | undefined,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.name === "AbortError") {
+      return { text: "応答に時間がかかりすぎました。もう一度お試しください。" };
+    }
     console.error("Fetch error:", error);
     return { text: "通信エラーが発生しました。インターネット接続を確認してください。" };
   }
