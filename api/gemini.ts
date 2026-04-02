@@ -1,31 +1,49 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-// GASからPDFナレッジを取得
+// ナレッジのメモリキャッシュ（5分間有効）
+let knowledgeCache: { text: string; timestamp: number } | null = null;
+const CACHE_TTL = 5 * 60 * 1000; // 5分
+
+// GASからPDFナレッジを取得（キャッシュ付き）
 async function fetchKnowledge(): Promise<string> {
+  // キャッシュが有効ならそれを返す
+  if (knowledgeCache && Date.now() - knowledgeCache.timestamp < CACHE_TTL) {
+    return knowledgeCache.text;
+  }
+
   const gasUrl = process.env.GAS_URL;
   if (!gasUrl) return "";
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
+
     const res = await fetch(gasUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({ action: "getKnowledge" }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
+
     const data = await res.json();
-    return data.knowledge || "";
+    const knowledge = data.knowledge || "";
+
+    // キャッシュに保存
+    knowledgeCache = { text: knowledge, timestamp: Date.now() };
+
+    return knowledge;
   } catch {
-    console.error("Failed to fetch knowledge from GAS");
-    return "";
+    // タイムアウトやエラー時はキャッシュがあればそれを返す、なければ空
+    return knowledgeCache?.text || "";
   }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // POSTのみ許可
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // サーバー側の環境変数からAPIキーを取得
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "API key not configured" });
@@ -42,13 +60,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "prompt too long" });
     }
 
-    // GASからPDFナレッジを取得
-    const knowledge = await fetchKnowledge();
+    // ナレッジ取得を先行開始（Geminiリクエスト組み立てと並列）
+    const knowledgePromise = fetchKnowledge();
 
-    // ナレッジがあればシステムインストラクションに追加
+    // ナレッジ取得完了を待つ
+    const knowledge = await knowledgePromise;
+
+    // システムインストラクションを組み立て
     let fullSystemInstruction = systemInstruction || "";
     if (knowledge) {
-      fullSystemInstruction += `\n\n===== 管理者がアップロードした最新の補助金ナレッジ =====\n以下は管理者が登録した最新の補助金関連資料です。回答の際はこの情報を優先的に参考にしてください。ただし公募が終了している可能性もあるため、Google検索の結果と照合して最新情報を提供してください。\n\n${knowledge}\n===== ナレッジここまで =====`;
+      fullSystemInstruction += `\n\n=== 補助金ナレッジ（管理者登録済み資料） ===\n${knowledge}\n=== ナレッジここまで ===`;
     }
 
     // Gemini API を呼ぶ
@@ -58,6 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: typeof temperature === "number" ? temperature : 0.2,
+        maxOutputTokens: 4096,
       },
       tools: [{ googleSearch: {} }],
     };
