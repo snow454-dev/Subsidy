@@ -128,17 +128,32 @@
         background-color: white;
         border-radius: 0.5rem;
         overflow: hidden;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+        table-layout: fixed;
       }
       .markdown-body th, .markdown-body td {
         border: 1px solid #e2e8f0;
-        padding: 0.75rem;
+        padding: 0.6rem 0.75rem;
         text-align: left;
+        vertical-align: top;
+        word-break: break-word;
+        overflow-wrap: break-word;
       }
       .markdown-body th {
         background-color: #f8fafc;
         font-weight: 700;
         color: #1e3a8a;
+        white-space: nowrap;
+        font-size: 0.8rem;
+      }
+      .markdown-body td:first-child {
+        width: 3rem;
+        text-align: center;
+        white-space: nowrap;
+      }
+      @media (max-width: 768px) {
+        .markdown-body table { font-size: 0.75rem; table-layout: auto; }
+        .markdown-body th, .markdown-body td { padding: 0.4rem 0.5rem; }
       }
       .markdown-body h3 { font-size: 1.2rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.25rem; }
       .markdown-body p { margin-bottom: 1rem; line-height: 1.7; color: #334155; }
