@@ -43,7 +43,7 @@ export const fetchSubsidyDetails = async (prompt: string): Promise<GeminiRespons
 };
 
 export const generateDraft = async (prompt: string): Promise<GeminiResponse> => {
-  return callGeminiAPI(prompt, 0.7);
+  return callGeminiAPI(prompt, 0.4);
 };
 
 export const generateChecklist = async (prompt: string): Promise<GeminiResponse> => {
