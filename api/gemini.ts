@@ -2,11 +2,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 // ナレッジのメモリキャッシュ（5分間有効）
 let knowledgeCache: { text: string; timestamp: number } | null = null;
-const CACHE_TTL = 5 * 60 * 1000; // 5分
+const CACHE_TTL = 5 * 60 * 1000;
 
-// GASからPDFナレッジを取得（キャッシュ付き）
 async function fetchKnowledge(): Promise<string> {
-  // キャッシュが有効ならそれを返す
   if (knowledgeCache && Date.now() - knowledgeCache.timestamp < CACHE_TTL) {
     return knowledgeCache.text;
   }
@@ -16,8 +14,7 @@ async function fetchKnowledge(): Promise<string> {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
-
+    const timeout = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(gasUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain" },
@@ -25,18 +22,40 @@ async function fetchKnowledge(): Promise<string> {
       signal: controller.signal,
     });
     clearTimeout(timeout);
-
     const data = await res.json();
     const knowledge = data.knowledge || "";
-
-    // キャッシュに保存
     knowledgeCache = { text: knowledge, timestamp: Date.now() };
-
     return knowledge;
   } catch {
-    // タイムアウトやエラー時はキャッシュがあればそれを返す、なければ空
     return knowledgeCache?.text || "";
   }
+}
+
+// Gemini APIをリトライ付きで呼び出す
+async function callGeminiWithRetry(url: string, body: any, maxRetries: number = 3): Promise<Response> {
+  let lastError: any;
+  for (let i = 0; i < maxRetries; i++) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    // 成功 or クライアントエラー（4xx）はそのまま返す
+    if (response.ok || (response.status >= 400 && response.status < 500)) {
+      return response;
+    }
+
+    // 503等のサーバーエラーはリトライ
+    lastError = response;
+    console.error(`Gemini API error (attempt ${i + 1}/${maxRetries}): ${response.status}`);
+
+    // リトライ前に少し待つ（1秒、2秒、4秒）
+    if (i < maxRetries - 1) {
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+    }
+  }
+  return lastError;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -60,19 +79,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "prompt too long" });
     }
 
-    // ナレッジ取得を先行開始（Geminiリクエスト組み立てと並列）
-    const knowledgePromise = fetchKnowledge();
+    const knowledge = await fetchKnowledge();
 
-    // ナレッジ取得完了を待つ
-    const knowledge = await knowledgePromise;
-
-    // システムインストラクションを組み立て
     let fullSystemInstruction = systemInstruction || "";
     if (knowledge) {
       fullSystemInstruction += `\n\n=== 補助金ナレッジ（管理者登録済み資料） ===\n${knowledge}\n=== ナレッジここまで ===`;
     }
 
-    // Gemini API を呼ぶ
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const body: any = {
@@ -88,16 +101,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body.systemInstruction = { parts: [{ text: fullSystemInstruction }] };
     }
 
-    const response = await fetch(geminiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    // リトライ付きで呼び出し
+    const response = await callGeminiWithRetry(geminiUrl, body, 3);
 
     if (!response.ok) {
       const errText = await response.text();
       console.error("Gemini API error:", response.status, errText);
-      return res.status(502).json({ error: "Gemini API request failed" });
+      return res.status(502).json({ error: "Gemini API request failed", status: response.status });
     }
 
     const data = await response.json();
